@@ -277,61 +277,62 @@
     <!-- Font Awesome for icons -->
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     
-      <script>
-        // Generate QR code for the current page URL
+       <script>
+        // Generate QR code when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            // Get the current page URL
-            const currentUrl = window.location.href;
-            
-            // Generate QR Code
-            const qrcodeElement = document.getElementById('qrcode');
-            
-            // Clear loading text
-            qrcodeElement.innerHTML = '';
-            
-            // Create QR Code
-            QRCode.toCanvas(qrcodeElement, currentUrl, {
-                width: 160,
-                height: 160,
-                colorDark: "#7ab893",
-                colorLight: "#f0f7f3",
-                correctLevel: QRCode.CorrectLevel.H
-            }, function(error) {
-                if (error) {
-                    console.error(error);
-                    qrcodeElement.innerHTML = '<div style="color: #ff6b6b; text-align: center;">QR Code Error<br><small>Please refresh</small></div>';
-                } else {
-                    console.log('QR Code generated successfully!');
-                }
-            });
+            generateQRCode();
         });
 
-        // Download QR Code function
+        function generateQRCode() {
+            const currentUrl = window.location.href;
+            const qrcodeElement = document.getElementById('qrcode');
+            
+            // Clear the element
+            qrcodeElement.innerHTML = '';
+            
+            try {
+                // Create QR code using the library
+                new QRCode(qrcodeElement, {
+                    text: currentUrl,
+                    width: 150,
+                    height: 150,
+                    colorDark: "#7ab893",
+                    colorLight: "#f0f7f3",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+                
+                console.log('QR Code generated successfully for:', currentUrl);
+            } catch (error) {
+                console.error('QR Code generation failed:', error);
+                qrcodeElement.innerHTML = `
+                    <div style="text-align: center; color: #88a899; padding: 10px;">
+                        <div>QR Code Error</div>
+                        <small>Please refresh the page</small>
+                    </div>
+                `;
+            }
+        }
+
         function downloadQRCode() {
-            const canvas = document.querySelector('#qrcode canvas');
+            const qrcodeElement = document.getElementById('qrcode');
+            const canvas = qrcodeElement.querySelector('canvas');
+            const img = qrcodeElement.querySelector('img');
+            
             if (canvas) {
+                // If it's a canvas element
                 const link = document.createElement('a');
                 link.download = 'emmanuel-ortiz-business-card-qr.png';
                 link.href = canvas.toDataURL('image/png');
                 link.click();
+            } else if (img) {
+                // If it's an img element
+                const link = document.createElement('a');
+                link.download = 'emmanuel-ortiz-business-card-qr.png';
+                link.href = img.src;
+                link.click();
+            } else {
+                alert('QR code not ready yet. Please wait a moment and try again.');
             }
-        }
-
-        // Alternative method using QRCode.js constructor (more options)
-        function generateQRCodeAlternative() {
-            const currentUrl = window.location.href;
-            const qrcodeElement = document.getElementById('qrcode');
-            
-            qrcodeElement.innerHTML = '';
-            
-            new QRCode(qrcodeElement, {
-                text: currentUrl,
-                width: 160,
-                height: 160,
-                colorDark: "#7ab893",
-                colorLight: "#f0f7f3",
-                correctLevel: QRCode.CorrectLevel.H
-            });
         }
     </script>
 </body>
